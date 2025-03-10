@@ -25,7 +25,7 @@ aks-spot-poc/
     │   └── ingress.yaml  
     ├── spot-node-pool.yaml            // Spot node pool configuration  
     └── terraform/                     // Terraform configuration for spot nodes 
-├── scenario2-managed-karpenter-nap/   // Scenario 2: Node Auto Provisioning  
+├── scenario2-node-auto-provision/   // Scenario 2: Node Auto Provisioning  
 │   ├── multiple-nodepools.yaml        // Config for multiple node pools  
 │   ├── node-auto-provisioning.yaml    // NAP main configuration  
 │   ├── README.md                      // Setup instructions for NAP  
