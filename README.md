@@ -50,7 +50,7 @@ In this scenario, the AKS cluster is set up with:
 ### Setup & Testing
 
 ```bash
-cd use-case-1
+cd scenario1-dedicated-spot-pool
 ./setup.sh
 kubectl apply -f sample-app/
 ../scripts/test-fallback.sh
@@ -63,7 +63,7 @@ This scenario uses Managed Karpenter to dynamically provision nodes. It prioriti
 ### Setup & Testing
 
 ```bash
-cd use-case-2
+cd scenario2-node-auto-provision
 ./setup.sh
 kubectl apply -f sample-app/
 ../scripts/monitor-rebalancing.sh
