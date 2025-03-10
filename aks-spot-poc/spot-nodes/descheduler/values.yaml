@@ -1,0 +1,22 @@
+replicas: 3
+leaderElection:
+ enabled: true
+kind: Deployment
+apiVersion: "descheduler/v1alpha2"
+kind: "DeschedulerPolicy"
+strategies:
+  "RemovePodsViolatingNodeAffinity":
+    enabled: true
+    params:
+      nodeAffinityType:
+      - "preferredDuringSchedulingIgnoredDuringExecution"
+  "LowNodeUtilization":
+    enabled: true
+    params:
+      nodeResourceUtilizationThresholds:
+        thresholds:
+          "cpu": 50
+          "memory": 50
+        targetThresholds:
+          "cpu": 70
+          "memory": 70

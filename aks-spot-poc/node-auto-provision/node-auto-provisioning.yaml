@@ -1,0 +1,52 @@
+apiVersion: karpenter.sh/v1beta1
+kind: NodePool
+metadata:
+  name: default
+spec:
+  limits:
+    cpu: "14"
+    memory: 64Gi
+  disruption:
+    budgets:
+    - nodes: 100%
+    # Describes which types of Nodes NAP should consider for consolidation
+    consolidationPolicy: WhenUnderutilized
+    # If using 'WhenEmptyOrUnderutilized', Karpenter will consider all nodes for consolidation and attempt to remove or replace Nodes when it discovers that the Node is empty or underutilized and could be changed to reduce cost
+    # If using `WhenEmpty`, Karpenter will only consider nodes for consolidation that contain no workload pods
+    # The amount of time NAP should wait after discovering a consolidation decision
+    # This value can currently only be set when the consolidationPolicy is 'WhenEmpty'
+    # You can choose to disable consolidation entirely by setting the string value 'Never'
+    #consolidateAfter: 1m
+  template:
+    spec:
+      nodeClassRef:
+        name: default
+      requirements:
+      - key: kubernetes.io/arch
+        operator: In
+        values:
+        - amd64
+      - key: kubernetes.io/os
+        operator: In
+        values:
+        - linux
+      - key: karpenter.sh/capacity-type
+        operator: In
+        values:
+        - spot
+        - on-demand
+      - key: karpenter.azure.com/sku-family
+        operator: In
+        values:
+        - D
+        - F
+        - E
+      # Optional: You can specify specific SKU names if needed
+      # - key: karpenter.azure.com/sku-name
+      #   operator: In
+      #   values:
+      #   - Standard_D2s_v3
+      #   - Standard_F4s_v2
+      #   - Standard_E2s_v3
+      # Optional: Limit VM resources to control costs
+    

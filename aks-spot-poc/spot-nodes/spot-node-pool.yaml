@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: NodePool
+metadata:
+  name: spot-node-pool
+spec:
+  vmSize: Standard_DS2_v2
+  availabilityZones:
+    - 1
+    - 2
+    - 3
+  mode: User
+  enableAutoScaling: true
+  minCount: 1
+  maxCount: 5
+  priority: Spot
+  nodeLabels:
+    purpose: spot
+  taints:
+    - key: spot-instance
+      value: "true"
+      effect: NoSchedule
