@@ -12,32 +12,33 @@ This project evaluates Azure Kubernetes Service (AKS) with spot virtual machines
 
 ## Project Structure
 
+```
 aks-spot-poc/  
-├── aks-create-nap.sh                 // Script to create AKS using Node Auto Provisioning  
-├── node-auto-provision/               // Scenario 2: Node Auto Provisioning  
-│   ├── multiple-nodepools.yaml      // Config for multiple node pools  
+└── scenario1-dedicated-spot-pool/     // Scenario 1: Dedicated Spot Nodes  
+    ├── descheduler/                   // Kubernetes descheduler configuration  
+    │   ├── configmap.yaml  
+    │   ├── job.yaml  
+    │   ├── rbac.yaml  
+    │   └── values.yaml  
+    ├── README.md                      // Setup instructions for spot nodes  
+    ├── sample-app/                    // Demo application manifest  
+    │   └── ingress.yaml  
+    ├── spot-node-pool.yaml            // Spot node pool configuration  
+    └── terraform/                     // Terraform configuration for spot nodes 
+├── scenario2-managed-karpenter-nap/   // Scenario 2: Node Auto Provisioning  
+│   ├── multiple-nodepools.yaml        // Config for multiple node pools  
 │   ├── node-auto-provisioning.yaml    // NAP main configuration  
-│   ├── README.md                    // Setup instructions for NAP  
-│   ├── sample-app/                 // Demo application manifests  
+│   ├── README.md                      // Setup instructions for NAP  
+│   ├── sample-app/                    // Demo application manifests  
 │   │   ├── ingress.yaml  
 │   │   ├── order-service.yaml  
 │   │   ├── product-service.yaml  
 │   │   ├── rabbitmq.yaml  
 │   │   └── store-front.yaml  
-│   ├── setup.sh                     // Setup script for NAP  
-│   └── terraform/                   // Terraform configuration for NAP  
-├── README.md                       // Main project documentation  
-└── spot-nodes/                     // Scenario 1: Dedicated Spot Nodes  
-    ├── descheduler/               // Kubernetes descheduler configuration  
-    │   ├── configmap.yaml  
-    │   ├── job.yaml  
-    │   ├── rbac.yaml  
-    │   └── values.yaml  
-    ├── README.md                 // Setup instructions for spot nodes  
-    ├── sample-app/               // Demo application manifest  
-    │   └── ingress.yaml  
-    ├── spot-node-pool.yaml         // Spot node pool configuration  
-    └── terraform/               // Terraform configuration for spot nodes  
+│   ├── setup.sh                       // Setup script for NAP  
+│   └── terraform/                     // Terraform configuration for NAP  
+├── README.md                          // Main project documentation  
+```
 
 ## Scenario 1: AKS with Dedicated Spot Node Pool and Fallback
 
