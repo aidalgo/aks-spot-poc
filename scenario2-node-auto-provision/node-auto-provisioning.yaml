@@ -3,20 +3,38 @@ kind: NodePool
 metadata:
   name: default
 spec:
+  # Resource limits constrain the total size of the pool.
+  # Limits prevent Karpenter from creating new instances once the limit is exceeded.
   limits:
     cpu: "14"
     memory: 64Gi
+  # Disruption section which describes the ways in which Karpenter can disrupt and replace Nodes
+  # Configuration in this section constrains how aggressive Karpenter can be with performing operations
+  # like rolling Nodes due to them hitting their maximum lifetime (expiry) or scaling down nodes to reduce cluster cost
   disruption:
     budgets:
     - nodes: 100%
     # Describes which types of Nodes NAP should consider for consolidation
-    consolidationPolicy: WhenUnderutilized
     # If using 'WhenEmptyOrUnderutilized', Karpenter will consider all nodes for consolidation and attempt to remove or replace Nodes when it discovers that the Node is empty or underutilized and could be changed to reduce cost
     # If using `WhenEmpty`, Karpenter will only consider nodes for consolidation that contain no workload pods
+    consolidationPolicy: WhenUnderutilized
     # The amount of time NAP should wait after discovering a consolidation decision
     # This value can currently only be set when the consolidationPolicy is 'WhenEmpty'
     # You can choose to disable consolidation entirely by setting the string value 'Never'
     #consolidateAfter: 1m
+    # Budgets control the speed Karpenter can scale down nodes.
+    # Karpenter will respect the minimum of the currently active budgets, and will round up
+    # when considering percentages. Duration and Schedule must be set together.
+    #budgets:
+    #- nodes: 10%
+    # On Weekdays during business hours, don't do any deprovisioning.
+    #- schedule: "0 9 * * mon-fri"
+    #  duration: 8h
+    #  nodes: "0"
+    # Priority given to the NodePool when the scheduler considers which NodePool
+    # to select. Higher weights indicate higher priority when comparing NodePools.
+    # Specifying no weight is equivalent to specifying a weight of 0.
+    #weight: 10
   template:
     spec:
       nodeClassRef:

@@ -4,7 +4,7 @@ This project evaluates Azure Kubernetes Service (AKS) with spot virtual machines
 
 ## Scenarios Overview
 
-1. **AKS with Dedicated Spot Node Pool and Fallback**  
+1. **AKS with Dedicated Spot Node Pool**  
    Uses a manual configuration with a primary spot node pool and a fallback regular node pool if spot capacity isn’t available.
 
 2. **AKS with Managed Karpenter for Node Auto Provisioning**  
@@ -34,8 +34,7 @@ aks-spot-poc/
 │   │   ├── order-service.yaml  
 │   │   ├── product-service.yaml  
 │   │   ├── rabbitmq.yaml  
-│   │   └── store-front.yaml  
-│   ├── setup.sh                       // Setup script for NAP  
+│   │   └── store-front.yaml   
 │   └── terraform/                     // Terraform configuration for NAP  
 ├── README.md                          // Main project documentation  
 ```
@@ -45,33 +44,23 @@ aks-spot-poc/
 In this scenario, the AKS cluster is set up with:
 - **Spot Node Pool:** To leverage cost-effective spot VMs.
 - **Fallback Node Pool:** To automatically run workload on regular VMs if spot capacity is exhausted.
-- **Pod Disruption Budget:** To maintain the required availability during node failures.
+- **Use of Descheduler:** To rebalance the workload if new spot nodes are available. 
 
 ### Setup & Testing
 
-```bash
-cd scenario1-dedicated-spot-pool
-./setup.sh
-kubectl apply -f sample-app/
-../scripts/test-fallback.sh
-```
+Please check the [README.me](scenario1-dedicated-spot-pool/README.md) file more all the details.
 
-## Scenario 2: AKS with Managed Karpenter for Auto Provisioning
+## Scenario 2: AKS with Node Auto Provisioning
 
-This scenario uses Managed Karpenter to dynamically provision nodes. It prioritizes spot instances while ensuring a fallback to regular VMs when necessary.
+This scenario uses AKS Node Auto Provision (NAP) to dynamically provision nodes. It prioritizes spot instances while ensuring a fallback to regular VMs when necessary. To learn more about NAP, check our official documentation [here](https://learn.microsoft.com/en-us/azure/aks/node-autoprovision). 
 
 ### Setup & Testing
 
-```bash
-cd scenario2-node-auto-provision
-./setup.sh
-kubectl apply -f sample-app/
-../scripts/monitor-rebalancing.sh
-```
+Please check the [README.me](scenario2-node-auto-provision/README.md) file more all the details.
 
 ## Infrastructure Setup with Terraform
 
-The `terraform/` directory contains the necessary configuration files:
+The `terraform/` directory of each scenario contains the necessary configuration files to deploy the test environment:
 ```bash
 cd terraform
 terraform init
