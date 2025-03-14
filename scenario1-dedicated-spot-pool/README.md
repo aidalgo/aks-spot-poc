@@ -23,6 +23,7 @@ export CLUSTER_NAME="aks-spot-cluster"
 - **Initialize Terraform:**  
   Command: 
   ```
+  export ARM_SUBSCRIPTION_ID=<your-subscription-id>
   terraform init
   ```  
   Description: Initializes the Terraform working directory and downloads necessary plugins. If you want to change the default values, check the variables in the terraform [main file](terraform/main.tf).

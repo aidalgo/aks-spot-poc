@@ -3,10 +3,12 @@ terraform {
     azurerm = {
       source  = "hashicorp/azurerm"
       # Use the latest azurerm provider version that supports AKS 1.30
+      version = "=4.23.0"
     }
     azapi = {
       source  = "azure/azapi"
       # AzAPI provider is used to enable the preview Node Autoprovisioning feature
+      version = "=2.3.0"
     }
   }
 }
@@ -113,8 +115,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
     type                         = "VirtualMachineScaleSets"
     orchestrator_version         = var.kubernetes_version
     vnet_subnet_id               = azurerm_subnet.aks_subnet.id
-    only_critical_addons_enabled = true  # taint to run only critical add-ons&#8203;:contentReference[oaicite:9]{index=9}
-    # Do NOT enable cluster autoscaler here (NAP will handle scaling)&#8203;:contentReference[oaicite:10]{index=10}.
+    only_critical_addons_enabled = true  # taint to run only critical add-ons
+    # Do NOT enable cluster autoscaler here (NAP will handle scaling)
     upgrade_settings {
       drain_timeout_in_minutes      = 0
       max_surge                     = "10%"
@@ -124,7 +126,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   network_profile {
     network_plugin      = "azure"    # Azure CNI plugin
-    network_plugin_mode = "overlay"  # enable overlay mode&#8203;:contentReference[oaicite:11]{index=11}
+    network_plugin_mode = "overlay"  # enable overlay
     network_policy      = "cilium"   # use Cilium for network policy
     network_data_plane   = "cilium"   # use Cilium dataplane (ebpf)
     dns_service_ip      = "10.2.0.10"    # (optional) DNS IP for cluster service
@@ -146,7 +148,7 @@ resource "azapi_update_resource" "enable_nap" {
   body = {
     properties = {
       nodeProvisioningProfile = {
-        mode = "Auto"  # Enable automatic node provisioning (Karpenter)&#8203;:contentReference[oaicite:12]{index=12}
+        mode = "Auto"  # Enable automatic node provisioning (Karpenter)
       }
     }
   }

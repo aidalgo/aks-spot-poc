@@ -63,6 +63,7 @@ Please check the [README.me](scenario2-node-auto-provision/README.md) file more 
 The `terraform/` directory of each scenario contains the necessary configuration files to deploy the test environment:
 ```bash
 cd terraform
+export ARM_SUBSCRIPTION_ID=<your-subscription-id>
 terraform init
 terraform apply
 ```

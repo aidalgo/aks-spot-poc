@@ -3,10 +3,12 @@ terraform {
     azurerm = {
       source  = "hashicorp/azurerm"
       # Use the latest azurerm provider version that supports AKS 1.30
+      version = "=4.23.0"
     }
     azapi = {
       source  = "azure/azapi"
       # AzAPI provider is used to enable the preview Node Autoprovisioning feature
+      version = "=2.3.0"
     }
   }
 }
@@ -115,6 +117,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     max_count           = 3
     node_count          = 1                   # initial node count (within min/max)
     vnet_subnet_id      = azurerm_subnet.aks_system_subnet.id
+    only_critical_addons_enabled = true # Enable only critical add-ons (e.g., kube-proxy, CoreDNS)
   }
 
   # Network configuration: kubenet + Calico
@@ -190,6 +193,11 @@ resource "azurerm_kubernetes_cluster_node_pool" "fallback" {
 
   # This pool uses regular priority (on-demand VMs) by default
   vnet_subnet_id        = azurerm_subnet.aks_fallback_subnet.id
+
+  # Taint and label to designate Spot nodes (so workloads only use them if tolerated)
+  node_labels = {
+    "scalepriority" = "fallback"
+  }
 
   tags = {
     Environment = "Dev"
