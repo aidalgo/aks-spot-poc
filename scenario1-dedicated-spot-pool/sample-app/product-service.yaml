@@ -27,13 +27,6 @@ spec:
                 operator: In
                 values:
                 - "spot"
-          - weight: 1
-            preference:
-              matchExpressions:
-              - key: "scalepriority"
-                operator: In
-                values:
-                - "fallback"
       nodeSelector:
         "kubernetes.io/os": linux
       containers:
