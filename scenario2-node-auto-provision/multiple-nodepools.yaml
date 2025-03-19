@@ -7,7 +7,7 @@ metadata:
     kubernetes.io/description: "General purpose AKSNodeClass for running Ubuntu2204 nodes"
 spec:
   imageFamily: Ubuntu2204
-  vnetSubnetID: "/subscriptions/664851bb-eabf-445a-b234-b6e1f8d1645f/resourceGroups/aks-nap-rg/providers/Microsoft.Network/virtualNetworks/aks-nap-cluster-vnet/subnets/on-demand-subnet"
+  vnetSubnetID: "/subscriptions/{YOUR_SUBSCRIPTION_ID}/resourceGroups/{YOUR_RESOURCE_GROUP}/providers/Microsoft.Network/virtualNetworks/{YOUR_VNET}/subnets/{YOUR_SUBNET}"
 ---
 apiVersion: karpenter.sh/v1beta1
 kind: NodePool
