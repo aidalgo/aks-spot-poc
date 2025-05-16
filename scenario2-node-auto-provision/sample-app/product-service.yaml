@@ -66,8 +66,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: product-service
-  minReplicas: 6
-  maxReplicas: 9
+  minReplicas: 1
+  maxReplicas: 2
   metrics:
   - type: Resource
     resource:

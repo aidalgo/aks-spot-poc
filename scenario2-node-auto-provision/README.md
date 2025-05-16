@@ -115,7 +115,7 @@ export CLUSTER_NAME="aks-nap-cluster"
   Command:
   ```
   kubectl get pods -o wide --namespace demo
-  kubectl get nodes -o wide
+  kubectl get nodes -L karpenter.sh/capacity-type,node.kubernetes.io/instance-type
   ```
   Description: Cross-reference pod placement with node types to confirm workloads are running on spot VMs.
 
@@ -126,13 +126,13 @@ export CLUSTER_NAME="aks-nap-cluster"
   kubectl get hpa -n demo
 
   # Scale the order service HPA (min and max replicas)
-  kubectl patch hpa order-service -n demo --patch '{"spec":{"minReplicas": 10, "maxReplicas": 12}}'
+  kubectl patch hpa order-service-hpa -n demo --patch '{"spec":{"minReplicas": 50, "maxReplicas": 50}}'
   
   # Scale the product service HPA (min and max replicas)
-  kubectl patch hpa product-service -n demo --patch '{"spec":{"minReplicas": 10, "maxReplicas": 12}}'
+  kubectl patch hpa product-service-hpa -n demo --patch '{"spec":{"minReplicas": 50, "maxReplicas": 50}}'
   
   # Scale the store front service HPA (min and max replicas)
-  kubectl patch hpa store-front-service -n demo --patch '{"spec":{"minReplicas": 10, "maxReplicas": 12}}'
+  kubectl patch hpa store-front-hpa -n demo --patch '{"spec":{"minReplicas": 50, "maxReplicas": 50}}'
   
   ```
   Description: Increases both minimum and maximum replicas for the HPAs of each service. This demonstrates NAP automatically provisioning additional spot nodes to accommodate the increased workload.
