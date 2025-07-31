@@ -27,7 +27,8 @@ aks-spot-poc/
     └── terraform/                     // Terraform configuration for spot nodes 
 ├── scenario2-node-auto-provision/   // Scenario 2: Node Auto Provisioning  
 │   ├── multiple-nodepools.yaml        // Config for multiple node pools  
-│   ├── node-auto-provisioning.yaml    // NAP main configuration  
+│   ├── node-auto-provisioning.yaml    // NAP main configuration with AKSNodeClass  
+│   ├── system-node-pool.yml           // System node pool for critical workloads  
 │   ├── README.md                      // Setup instructions for NAP  
 │   ├── sample-app/                    // Demo application manifests  
 │   │   ├── ingress.yaml  
