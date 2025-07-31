@@ -1,4 +1,23 @@
-apiVersion: karpenter.sh/v1beta1
+apiVersion: karpenter.azure.com/v1beta1
+kind: AKSNodeClass
+metadata:
+  name: default
+spec:
+  # VM instance families/sizes to use
+  imageFamily: Ubuntu2204
+  #if you want to specify which subnet to use, uncomment the following line and replace with your values
+  #vnetSubnetID: "/subscriptions/{YOUR_SUBSCRIPTION_ID}/resourceGroups/{YOUR_RESOURCE_GROUP}/providers/Microsoft.Network/virtualNetworks/{YOUR_VNET}/subnets/{YOUR_SUBNET}"
+  
+  # Maximum number of pods per node
+  # This is the key setting to limit pods per node
+  maxPods: 30
+    
+  # Optional: User data script for additional node customization
+  # userData: |
+  #   #!/bin/bash
+  #   echo "Custom node initialization script"
+---
+apiVersion: karpenter.sh/v1
 kind: NodePool
 metadata:
   name: default
@@ -17,25 +36,36 @@ spec:
   # Configuration in this section constrains how aggressive Karpenter can be with performing operations
   # like rolling Nodes due to them hitting their maximum lifetime (expiry) or scaling down nodes to reduce cluster cost
   disruption:
+    # Consolidation policy determines when nodes can be removed
+    # WhenEmptyOrUnderutilized: Considers all nodes and attempts to remove/replace underutilized nodes to reduce cost
+    # WhenEmpty: Only considers nodes with no workload pods for consolidation
+    consolidationPolicy: WhenEmptyOrUnderutilized
+    
+    # Time to wait before acting on consolidation decisions (600s = 10 minutes)
+    # Provides a buffer to avoid unnecessary churn from temporary resource changes
+    consolidateAfter: 600s
+    # The amount of time a Node can live on the cluster before being removed
+    # Avoiding long-running Nodes helps to reduce security vulnerabilities as well as to reduce the chance of issues that can plague Nodes with long uptimes such as file fragmentation or memory leaks from system processes
+    # You can choose to disable expiration entirely by setting the string value 'Never' here
+    # Note: changing this value in the nodepool will drift the nodeclaims.
+    #expireAfter: 720h | Never
+
+    # Budgets control the speed and conditions under which Karpenter can scale down nodes
+    # Multiple budgets can be defined and the most restrictive will apply
     budgets:
-    - nodes: 100%
-    # Describes which types of Nodes NAP should consider for consolidation
-    # If using 'WhenEmptyOrUnderutilized', Karpenter will consider all nodes for consolidation and attempt to remove or replace Nodes when it discovers that the Node is empty or underutilized and could be changed to reduce cost
-    # If using `WhenEmpty`, Karpenter will only consider nodes for consolidation that contain no workload pods
-    #consolidationPolicy: WhenUnderutilized
-    # The amount of time NAP should wait after discovering a consolidation decision
-    # This value can currently only be set when the consolidationPolicy is 'WhenEmpty'
-    # You can choose to disable consolidation entirely by setting the string value 'Never'
-    consolidateAfter: 1m
-    # Budgets control the speed Karpenter can scale down nodes.
-    # Karpenter will respect the minimum of the currently active budgets, and will round up
-    # when considering percentages. Duration and Schedule must be set together.
-    #budgets:
-    #- nodes: 10%
-    # On Weekdays during business hours, don't do any deprovisioning.
-    #- schedule: "0 9 * * mon-fri"
-    #  duration: 8h
-    #  nodes: "0"
+      # Business hours protection: Block all underutilization-based consolidation during weekdays 15:00-24:00 UTC
+      # This prevents cost optimization disruptions during peak business hours
+      - nodes: "0"                   # Block all consolidation
+        reasons:
+        - "Underutilized"            # Only apply restriction to underutilized nodes
+        schedule: "0 15 * * mon-fri" # Starting at 15:00 UTC on weekdays (cron format)
+        duration: 9h                 # Block for 9 hours (15:00-24:00 UTC)
+      # Conservative consolidation for empty and drifted nodes
+      # Allow removal of only 1 node at a time for safer scaling operations
+      - nodes: "1"                   # Allow maximum 1 node to be removed at a time
+        reasons:
+        - "Empty"                    # Nodes with no running pods
+        - "Drifted"                  # Nodes that no longer match the NodePool specification
     # Priority given to the NodePool when the scheduler considers which NodePool
     # to select. Higher weights indicate higher priority when comparing NodePools.
     # Specifying no weight is equivalent to specifying a weight of 0.
@@ -43,6 +73,7 @@ spec:
   template:
     spec:
       nodeClassRef:
+        kind: AKSNodeClass
         name: default
       # Add taints and labels to your NodePool to ensure only specific workloads are 
       # scheduled on these nodes. This is especially important if you mix spot and 
